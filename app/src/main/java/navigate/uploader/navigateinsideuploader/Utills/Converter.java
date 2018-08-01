@@ -18,12 +18,12 @@ public final class Converter {
         return BitmapFactory.decodeByteArray(arr, 0,arr.length);
     }
 
-    public static byte[] getBitmapAsByteArray(Bitmap bitmap){
+    public static byte[] getBitmapAsByteArray(Bitmap bitmap, int quality){
         ByteArrayOutputStream bas;
         byte[] bArray;
         try {
             bas = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG,75 ,bas);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality ,bas);
             bArray = bas.toByteArray();
             bas.flush();
             bas.close();
@@ -36,7 +36,7 @@ public final class Converter {
     }
 
     public static Bitmap compreesBitmap(Bitmap img){
-        byte[] arr = getBitmapAsByteArray(img);
+        byte[] arr = getBitmapAsByteArray(img, 75);
         return decodeImage(arr);
     }
 

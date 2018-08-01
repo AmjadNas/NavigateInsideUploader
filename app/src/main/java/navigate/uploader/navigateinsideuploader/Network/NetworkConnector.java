@@ -25,6 +25,7 @@ import java.util.Map;
 
 import navigate.uploader.navigateinsideuploader.Objects.Node;
 import navigate.uploader.navigateinsideuploader.Utills.Constants;
+import navigate.uploader.navigateinsideuploader.Utills.Converter;
 
 
 public class NetworkConnector {
@@ -36,13 +37,14 @@ public class NetworkConnector {
 
     // server address
     private final String PORT = "8080";
-    private final String IP = "132.74.213.48";
+    private final String IP = "";
     private final String HOST_URL = "http://" + IP + ":" + PORT +"/";
     private final String BASE_URL = HOST_URL + "projres";
 
     // server requests
     public static final String GET_ALL_NODES_JSON_REQ = "0";
     public static final String GET_NODE_IMAGE = "1";
+    public static final String INSERT_NODE = "2";
 
     private String tempReq;
     private static final String RESOURCE_FAIL_TAG = "{\"result_code\":0}";
@@ -171,9 +173,86 @@ public class NetworkConnector {
                 addToRequestQueue(query, listener);
                 break;
             }
+            case INSERT_NODE:{
+                uploadItemImage(data, listener);
+                break;
+            }
         }
     }
 
+    private void uploadItemImage(final Node item, final NetworkResListener listener) {
+
+        String reqUrl = HOST_URL + "web_item_manage?";
+        notifyPreUpdateListeners(listener);
+
+
+        //our custom volley request
+        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, reqUrl,
+                new Response.Listener<NetworkResponse>() {
+                    @Override
+                    public void onResponse(NetworkResponse response) {
+                        try {
+                            JSONObject obj = new JSONObject(new String(response.data));
+                            Toast.makeText(mCtx, obj.getString("message"), Toast.LENGTH_SHORT).show();
+                            notifyPostUpdateListeners(obj, ResStatus.SUCCESS, listener);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(mCtx, error.getMessage(), Toast.LENGTH_SHORT).show();
+                        JSONObject obj = null;
+                        try {
+                            obj = new JSONObject(RESOURCE_FAIL_TAG );
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            notifyPostUpdateListeners(obj, ResStatus.FAIL, listener);
+                        }
+
+                    }
+                }) {
+
+            /*
+             * If you want to add more parameters with the image
+             * you can do it here
+             * here we have only one parameter with the image
+             * which is tags
+             * */
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put(Constants.BEACONID, item.get_id().toString());
+                params.put(Constants.Junction, String.valueOf(item.isJunction()));
+                params.put(Constants.Elevator,  String.valueOf(item.isElevator()));
+                params.put(Constants.Outside, String.valueOf(item.isOutside()));
+                params.put(Constants.NessOutside, String.valueOf(item.isNessOutside()));
+                params.put(Constants.Direction, String.valueOf(item.getDirection()));
+                params.put(Constants.Building, item.getBuilding());
+                params.put(Constants.Floor, item.getFloor());
+                return params;
+            }
+
+            /*
+             * Here we are passing image by renaming it with a unique name
+             * */
+            @Override
+            protected Map<String, DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+                long imagename = System.currentTimeMillis();
+                byte[] pic = Converter.getBitmapAsByteArray(item.getImage(), 100);
+                params.put("fileField", new DataPart(imagename + ".png", pic));
+                return params;
+            }
+        };
+
+        //adding the request to volley
+        getRequestQueue().add(volleyMultipartRequest);
+    }
 
     public void update(NetworkResListener listener){
 
