@@ -1,5 +1,6 @@
 package navigate.uploader.navigateinsideuploader.Activities;
 
+import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,15 +9,21 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import navigate.uploader.navigateinsideuploader.Logic.SysData;
+import navigate.uploader.navigateinsideuploader.Network.NetworkConnector;
+import navigate.uploader.navigateinsideuploader.Network.NetworkResListener;
+import navigate.uploader.navigateinsideuploader.Network.ResStatus;
 import navigate.uploader.navigateinsideuploader.Objects.Node;
 import navigate.uploader.navigateinsideuploader.R;
 
 
-public class AddRoomActivity extends AppCompatActivity {
+public class AddRoomActivity extends AppCompatActivity implements NetworkResListener {
     private Spinner node1;
     private SysData data;
     private TextView name, number;
@@ -52,13 +59,38 @@ public class AddRoomActivity extends AppCompatActivity {
         String nm = name.getEditableText().toString();
         String num = number.getEditableText().toString();
         String bid = (String)node1.getSelectedItem();
-        arrayAdapter.add(name + " " + number);
-        data.insertRoomToNode(bid, num, nm);
+
+        NetworkConnector.getInstance().addRoomToNode(bid, nm, num, this);
+
 
     }
 
     public void exit(View view) {
         finish();
+    }
+
+    @Override
+    public void onPreUpdate(String str) {
+
+    }
+
+    @Override
+    public void onPostUpdate(JSONObject res, ResStatus status) {
+        if (status == ResStatus.SUCCESS){
+            String nm = name.getEditableText().toString();
+            String num = number.getEditableText().toString();
+            String bid = (String)node1.getSelectedItem();
+            if(!data.insertRoomToNode(bid, num, nm)){
+                Toast.makeText(this, "Could'nt add room to db", Toast.LENGTH_SHORT).show();
+            }else
+                fileList();
+        }else
+            Toast.makeText(this, "Could'nt upload room", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPostUpdate(Bitmap res, ResStatus status) {
+
     }
 }
 

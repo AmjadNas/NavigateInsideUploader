@@ -17,9 +17,12 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
 import com.estimote.coresdk.recognition.packets.Beacon;
+
+import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -27,12 +30,16 @@ import java.io.InputStream;
 import navigate.uploader.navigateinsideuploader.Logic.Listeners.BeaconListener;
 import navigate.uploader.navigateinsideuploader.Logic.MyApplication;
 import navigate.uploader.navigateinsideuploader.Logic.SysData;
+import navigate.uploader.navigateinsideuploader.Network.NetworkConnector;
+import navigate.uploader.navigateinsideuploader.Network.NetworkResListener;
+import navigate.uploader.navigateinsideuploader.Network.ResStatus;
 import navigate.uploader.navigateinsideuploader.Objects.BeaconID;
+import navigate.uploader.navigateinsideuploader.Objects.Node;
 import navigate.uploader.navigateinsideuploader.Utills.Constants;
 import navigate.uploader.navigateinsideuploader.Utills.Converter;
 import navigate.uploader.navigateinsideuploader.R;
 
-public class AddNodeActivity extends AppCompatActivity implements BeaconListener, SensorEventListener{
+public class AddNodeActivity extends AppCompatActivity implements BeaconListener, SensorEventListener, NetworkResListener {
 
     private final static int IMAGE_CAPTUE_REQ = 1;
     private static final int PICK_IMAGE = 111;
@@ -69,24 +76,22 @@ public class AddNodeActivity extends AppCompatActivity implements BeaconListener
 
         panoWidgetView = (ImageView) findViewById(R.id.thumb_add_node);
 
-
-
         initSensor();
     }
 
     private void loadImageto3D(final Bitmap res) {
-        new AsyncTask<Void, Void, Bitmap>(){
+        new AsyncTask<Void, Void, byte[]>(){
             @Override
-            protected void onPostExecute(Bitmap aVoid) {
+            protected void onPostExecute(byte[] aVoid) {
                 tmp = Converter.getImageTHumbnail(aVoid);
                 panoWidgetView.setImageBitmap(tmp);
-                img = aVoid;
+                img = Converter.decodeImage(aVoid);
             }
 
             @Override
-            protected Bitmap doInBackground(Void... params) {
+            protected byte[] doInBackground(Void... params) {
 
-                return Converter.compreesBitmap(res);
+                return Converter.getBitmapAsByteArray(res, 75);
             }
         }.execute();
 
@@ -201,24 +206,21 @@ public class AddNodeActivity extends AppCompatActivity implements BeaconListener
     }
 
     public void SaveNode(View view) {
-
-        if(!major.getEditableText().toString().isEmpty() && !minor.getEditableText().toString().isEmpty()){
+        Toast.makeText(this, "Uploading node", Toast.LENGTH_SHORT).show();
+        Node n;
+        BeaconID id ;
+        if(!major.getEditableText().toString().isEmpty() && !minor.getEditableText().toString().isEmpty()) {
             int mjr = Integer.parseInt(major.getEditableText().toString());
             int mnr = Integer.parseInt(minor.getEditableText().toString());
-            BeaconID id = new BeaconID(Constants.DEFULTUID,mjr, mnr);
+            id = new BeaconID(Constants.DEFULTUID, mjr, mnr);
+        }else
+            id = currntID;
 
-            data.saveNode(id,
-                    floar.getEditableText().toString(), building.getEditableText().toString(),
-                    junction.isChecked(), elevator.isChecked(), outside.isChecked(), img, mAzimuth);
-        }else {
-            data.saveNode(currntID,
-                    floar.getEditableText().toString(), building.getEditableText().toString(),
-                    junction.isChecked(), elevator.isChecked(), outside.isChecked(), img, mAzimuth);
-        }
-
-        finish();
-
-
+         n = new Node(id,junction.isChecked(), elevator.isChecked(), building.getEditableText().toString(), floar.getEditableText().toString());
+        n.setOutside(outside.isChecked());
+        n.setDirection(mAzimuth);
+        n.setImage(img);
+        NetworkConnector.getInstance().sendRequestToServer(NetworkConnector.INSERT_NODE, n, this);
     }
 
 
@@ -235,5 +237,37 @@ public class AddNodeActivity extends AppCompatActivity implements BeaconListener
         img = Bitmap.createBitmap(img,0,0,img.getWidth(),img.getHeight(),m,false);
         tmp = Bitmap.createBitmap(tmp,0,0,tmp.getWidth(),tmp.getHeight(),m,false);
         panoWidgetView.setImageBitmap(tmp);
+    }
+
+    @Override
+    public void onPreUpdate(String str) {
+
+    }
+
+    @Override
+    public void onPostUpdate(JSONObject res, ResStatus status) {
+        if (status == ResStatus.SUCCESS){
+            BeaconID id ;
+            if(!major.getEditableText().toString().isEmpty() && !minor.getEditableText().toString().isEmpty()) {
+                int mjr = Integer.parseInt(major.getEditableText().toString());
+                int mnr = Integer.parseInt(minor.getEditableText().toString());
+                id = new BeaconID(Constants.DEFULTUID, mjr, mnr);
+            }else
+                id = currntID;
+
+                if(data.saveNode(id,
+                        floar.getEditableText().toString(), building.getEditableText().toString(),
+                        junction.isChecked(), elevator.isChecked(), outside.isChecked(), img, mAzimuth))
+                    finish();
+                else
+                    Toast.makeText(this, "Couldn't save node", Toast.LENGTH_SHORT).show();
+
+        }else
+            Toast.makeText(this, "Couldn't upload node", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPostUpdate(Bitmap res, ResStatus status) {
+
     }
 }

@@ -17,11 +17,10 @@ public class SysData {
     //Its should contain Nodes List
     private static SysData instance = null;
     private ArrayList<Node> AllNodes;
-    //private DataBase db;
+    private DataBase db;
 
     private SysData(){
         AllNodes = new ArrayList<>();
-        //InitializeData();
     }
 
     public static SysData getInstance(){
@@ -46,14 +45,14 @@ public class SysData {
     }
 
 
-    /*public void initDatBase(Context context){
+    public void initDatBase(Context context){
         db = new DataBase(context);
-    }*/
+    }
 
-    /*public void closeDatabase(){
+    public void closeDatabase(){
         if(db != null)
             db.close();
-    }*/
+    }
 
     public Node getNodeByBeaconID(BeaconID bid) {
         for (Node node : AllNodes)
@@ -70,40 +69,49 @@ public class SysData {
         return img;
     }*/
     public void InitializeData(){
-       // db.getNodes(AllNodes);
+        db.getNodes(AllNodes);
 
 
     }
-    public void saveNode(BeaconID bid,  String floar, String building, boolean junction, boolean Elevator, boolean outside, Bitmap img,int dir) {
+    public boolean saveNode(BeaconID bid,  String floar, String building, boolean junction, boolean Elevator, boolean outside, Bitmap img,int dir) {
         Node node = new Node(bid,junction, Elevator, building, floar);
         node.setOutside(outside);
         node.setDirection(dir);
-       // db.insertNode(Node.getContentValues(node));
-        insertImageToDB(bid, img);
+        if(db.insertNode(Node.getContentValues(node))) {
+            insertImageToDB(bid, img);
 
-        AllNodes.add(node);
-
+            AllNodes.add(node);
+            return true;
+        }
+        return false;
     }
 
-    public void linkNodes(String s1, String s2, int direction, boolean isdirect) {
+    public boolean linkNodes(String s1, String s2, int direction, boolean isdirect) {
         Node node1 = getNodeByBeaconID(BeaconID.from(s1));
         Node node2 = getNodeByBeaconID(BeaconID.from(s2));
         int dir = (direction + 180) % 360;
 
-        node1.AddNeighbour(new Pair<Node, Integer>(node2, direction));
-        node2.AddNeighbour(new Pair<Node, Integer>(node1, dir));
-       // db.insertRelation(s1,s2, direction, isdirect);
+        if ( db.insertRelation(s1,s2, direction, isdirect)){
+            node1.AddNeighbour(new Pair<Node, Integer>(node2, direction));
+            node2.AddNeighbour(new Pair<Node, Integer>(node1, dir));
+            return true;
+        }
+        return false;
+
     }
 
-    public void insertRoomToNode(String bid, String num, String nm) {
+    public boolean insertRoomToNode(String bid, String num, String nm) {
 
         Node node = getNodeByBeaconID(BeaconID.from(bid));
-        node.AddRoom(new Room(num, nm));
-        //db.insertRoom(bid, nm, num);
+        if ( db.insertRoom(bid, nm, num)){
+            node.AddRoom(new Room(num, nm));
+            return true;
+        }
+        return false;
     }
 
-    public void insertImageToDB(BeaconID currentBeacon, Bitmap res) {
-       // db.insertImage(currentBeacon, res);
+    public void insertImageToDB(BeaconID currentBeacon,Bitmap res) {
+        db.insertImage(currentBeacon, res);
     }
 }
 

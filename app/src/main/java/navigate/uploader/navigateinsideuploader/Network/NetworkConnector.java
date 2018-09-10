@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import navigate.uploader.navigateinsideuploader.Objects.Node;
+import navigate.uploader.navigateinsideuploader.Objects.Room;
 import navigate.uploader.navigateinsideuploader.Utills.Constants;
 import navigate.uploader.navigateinsideuploader.Utills.Converter;
 
@@ -45,6 +46,9 @@ public class NetworkConnector {
     public static final String GET_ALL_NODES_JSON_REQ = "0";
     public static final String GET_NODE_IMAGE = "1";
     public static final String INSERT_NODE = "2";
+    public static final String ADD_ROOM_TO_NODE = "3";
+    public static final String PAIR_NODES = "4";
+    public static final String DELETE_NODE = "5";
 
     private String tempReq;
     private static final String RESOURCE_FAIL_TAG = "{\"result_code\":0}";
@@ -165,7 +169,7 @@ public class NetworkConnector {
 
         switch (requestCode){
            
-            case GET_NODE_IMAGE:{
+            case GET_NODE_IMAGE: case DELETE_NODE:{
                 builder.appendQueryParameter(REQ , requestCode);
                 builder.appendQueryParameter(Constants.BEACONID , data.get_id().toString());
 
@@ -180,11 +184,39 @@ public class NetworkConnector {
         }
     }
 
+    public void pairNodes(String n1, String n2 , int direction, boolean isDirect, NetworkResListener listener){
+        if(n1 == null || n2 == null){
+            return;
+        }
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.appendQueryParameter(REQ , PAIR_NODES);
+        builder.appendQueryParameter(Constants.FirstID , n1);
+        builder.appendQueryParameter(Constants.SecondID , n2);
+        builder.appendQueryParameter(Constants.Direction , String.valueOf(direction));
+        builder.appendQueryParameter(Constants.DIRECT, String.valueOf(isDirect));
+
+        String query = builder.build().getEncodedQuery();
+        addToRequestQueue(query, listener);
+
+    }
+
+    public void addRoomToNode(String data, String name, String number, NetworkResListener listener){
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.appendQueryParameter(REQ , ADD_ROOM_TO_NODE);
+        builder.appendQueryParameter(Constants.BEACONID , data);
+        builder.appendQueryParameter(Constants.NUMBER , number);
+        builder.appendQueryParameter(Constants.NAME , name);
+
+        String query = builder.build().getEncodedQuery();
+        addToRequestQueue(query, listener);
+    }
+
     private void uploadItemImage(final Node item, final NetworkResListener listener) {
 
         String reqUrl = HOST_URL + "web_item_manage?";
         notifyPreUpdateListeners(listener);
-
 
         //our custom volley request
         VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, reqUrl,

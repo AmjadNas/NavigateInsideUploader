@@ -35,13 +35,12 @@ public final class Converter {
 
     }
 
-    public static Bitmap compreesBitmap(Bitmap img){
-        byte[] arr = getBitmapAsByteArray(img, 75);
-        return decodeImage(arr);
-    }
-
     public static Bitmap getImageTHumbnail(Bitmap img){
         return ThumbnailUtils.extractThumbnail(img,500,300);
+    }
+
+    public static Bitmap getImageTHumbnail(byte[] img){
+        return ThumbnailUtils.extractThumbnail(decodeImage(img),500,300);
     }
 
 }

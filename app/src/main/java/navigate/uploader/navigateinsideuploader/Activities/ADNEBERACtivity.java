@@ -2,8 +2,12 @@ package navigate.uploader.navigateinsideuploader.Activities;
 
 
 
+import navigate.uploader.navigateinsideuploader.Network.NetworkConnector;
+import navigate.uploader.navigateinsideuploader.Network.NetworkResListener;
+import navigate.uploader.navigateinsideuploader.Network.ResStatus;
 import navigate.uploader.navigateinsideuploader.R;
 
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -16,6 +20,9 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -23,7 +30,7 @@ import navigate.uploader.navigateinsideuploader.Logic.MyApplication;
 import navigate.uploader.navigateinsideuploader.Logic.SysData;
 import navigate.uploader.navigateinsideuploader.Objects.Node;
 
-public class ADNEBERACtivity extends AppCompatActivity implements SensorEventListener {
+public class ADNEBERACtivity extends AppCompatActivity implements SensorEventListener, NetworkResListener {
     private Spinner node1, node2;
     private SysData data;
     private TextView text;
@@ -44,8 +51,6 @@ public class ADNEBERACtivity extends AppCompatActivity implements SensorEventLis
 
         node1 = (Spinner) findViewById(R.id.spinner1);
         node2 = (Spinner) findViewById(R.id.spinner2);
-
-        data = SysData.getInstance();
 
         text = (TextView)findViewById(R.id.textView);
         box = (CheckBox)findViewById(R.id.checkBox);
@@ -79,14 +84,16 @@ public class ADNEBERACtivity extends AppCompatActivity implements SensorEventLis
         mSensorManager.unregisterListener(this);
     }
 
-    public void Save(View view) {
 
+
+    public void Save(View view) {
         String s1 = (String) node1.getSelectedItem();
         String s2 = (String) node2.getSelectedItem();
 
-        data.linkNodes(s1,s2, mAzimuth, box.isChecked());
+        NetworkConnector.getInstance().pairNodes(s1, s2, mAzimuth, box.isChecked(), this);
 
         finish();
+
     }
 
     @Override
@@ -107,5 +114,26 @@ public class ADNEBERACtivity extends AppCompatActivity implements SensorEventLis
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
 
+    @Override
+    public void onPreUpdate(String str) {
 
+    }
+
+    @Override
+    public void onPostUpdate(JSONObject res, ResStatus status) {
+        if (status == ResStatus.SUCCESS){
+            String s1 = (String) node1.getSelectedItem();
+            String s2 = (String) node2.getSelectedItem();
+            if (!data.linkNodes(s1,s2, mAzimuth, box.isChecked()))
+                Toast.makeText(this, "Couldn't link nodes in database", Toast.LENGTH_SHORT).show();
+            else
+                fileList();
+        }else
+            Toast.makeText(this, "Couldn't link nodes online", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPostUpdate(Bitmap res, ResStatus status) {
+
+    }
 }

@@ -9,18 +9,24 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import navigate.uploader.navigateinsideuploader.Logic.SysData;
+import navigate.uploader.navigateinsideuploader.Network.NetworkConnector;
 import navigate.uploader.navigateinsideuploader.R;
 
 public class AddStuff extends AppCompatActivity {
     
     private Button add, relate, addroom;
-
+    private SysData data;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_stuff);
 
+        NetworkConnector.getInstance().initialize(getApplicationContext());
+        data = SysData.getInstance();
+        data.initDatBase(getApplicationContext());
+        data.InitializeData();
         initView();
     }
 
@@ -53,7 +59,11 @@ public class AddStuff extends AppCompatActivity {
         });
     }
 
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        data.closeDatabase();
+    }
 
 }
 
