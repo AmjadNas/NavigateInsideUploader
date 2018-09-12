@@ -216,11 +216,18 @@ public class AddNodeActivity extends AppCompatActivity implements BeaconListener
         }else
             id = currntID;
 
-         n = new Node(id,junction.isChecked(), elevator.isChecked(), building.getEditableText().toString(), floar.getEditableText().toString());
+        n = new Node(id,junction.isChecked(), elevator.isChecked(), building.getEditableText().toString(), floar.getEditableText().toString());
         n.setOutside(outside.isChecked());
         n.setDirection(mAzimuth);
         n.setImage(img);
         NetworkConnector.getInstance().sendRequestToServer(NetworkConnector.INSERT_NODE, n, this);
+
+        if(data.saveNode(id,
+                floar.getEditableText().toString(), building.getEditableText().toString(),
+                junction.isChecked(), elevator.isChecked(), outside.isChecked(), img, mAzimuth))
+            finish();
+        else
+            Toast.makeText(this, "Couldn't save node", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -247,20 +254,6 @@ public class AddNodeActivity extends AppCompatActivity implements BeaconListener
     @Override
     public void onPostUpdate(JSONObject res, ResStatus status) {
         if (status == ResStatus.SUCCESS){
-            BeaconID id ;
-            if(!major.getEditableText().toString().isEmpty() && !minor.getEditableText().toString().isEmpty()) {
-                int mjr = Integer.parseInt(major.getEditableText().toString());
-                int mnr = Integer.parseInt(minor.getEditableText().toString());
-                id = new BeaconID(Constants.DEFULTUID, mjr, mnr);
-            }else
-                id = currntID;
-
-                if(data.saveNode(id,
-                        floar.getEditableText().toString(), building.getEditableText().toString(),
-                        junction.isChecked(), elevator.isChecked(), outside.isChecked(), img, mAzimuth))
-                    finish();
-                else
-                    Toast.makeText(this, "Couldn't save node", Toast.LENGTH_SHORT).show();
 
         }else
             Toast.makeText(this, "Couldn't upload node", Toast.LENGTH_SHORT).show();

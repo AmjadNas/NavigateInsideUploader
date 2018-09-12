@@ -55,6 +55,7 @@ public class ADNEBERACtivity extends AppCompatActivity implements SensorEventLis
         text = (TextView)findViewById(R.id.textView);
         box = (CheckBox)findViewById(R.id.checkBox);
 
+        data = SysData.getInstance();
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR );
 
@@ -92,7 +93,6 @@ public class ADNEBERACtivity extends AppCompatActivity implements SensorEventLis
 
         NetworkConnector.getInstance().pairNodes(s1, s2, mAzimuth, box.isChecked(), this);
 
-        finish();
 
     }
 
@@ -127,7 +127,7 @@ public class ADNEBERACtivity extends AppCompatActivity implements SensorEventLis
             if (!data.linkNodes(s1,s2, mAzimuth, box.isChecked()))
                 Toast.makeText(this, "Couldn't link nodes in database", Toast.LENGTH_SHORT).show();
             else
-                fileList();
+                finish();
         }else
             Toast.makeText(this, "Couldn't link nodes online", Toast.LENGTH_SHORT).show();
     }

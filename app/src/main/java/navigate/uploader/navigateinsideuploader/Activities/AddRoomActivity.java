@@ -83,7 +83,7 @@ public class AddRoomActivity extends AppCompatActivity implements NetworkResList
             if(!data.insertRoomToNode(bid, num, nm)){
                 Toast.makeText(this, "Could'nt add room to db", Toast.LENGTH_SHORT).show();
             }else
-                fileList();
+                finish();
         }else
             Toast.makeText(this, "Could'nt upload room", Toast.LENGTH_SHORT).show();
     }
