@@ -91,7 +91,7 @@ public class AddNodeActivity extends AppCompatActivity implements BeaconListener
             @Override
             protected byte[] doInBackground(Void... params) {
 
-                return Converter.getBitmapAsByteArray(res, 75);
+                return Converter.getBitmapAsByteArray(res, 100);
             }
         }.execute();
 

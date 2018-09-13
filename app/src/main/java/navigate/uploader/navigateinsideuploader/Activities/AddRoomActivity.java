@@ -59,9 +59,18 @@ public class AddRoomActivity extends AppCompatActivity implements NetworkResList
         String nm = name.getEditableText().toString();
         String num = number.getEditableText().toString();
         String bid = (String)node1.getSelectedItem();
+        String[] range = num.split("-");
+        int i, j;
 
-        NetworkConnector.getInstance().addRoomToNode(bid, nm, num, this);
+        if(range.length > 1){
+            j = Integer.parseInt(range[1]);
+        }else
+            j = Integer.parseInt(range[0]);
+        i = Integer.parseInt(range[0]);
 
+        for(;i <= j; i++) {
+            NetworkConnector.getInstance().addRoomToNode(bid, String.valueOf(i),num, this);
+        }
 
     }
 
@@ -82,8 +91,7 @@ public class AddRoomActivity extends AppCompatActivity implements NetworkResList
             String bid = (String)node1.getSelectedItem();
             if(!data.insertRoomToNode(bid, num, nm)){
                 Toast.makeText(this, "Could'nt add room to db", Toast.LENGTH_SHORT).show();
-            }else
-                finish();
+            }
         }else
             Toast.makeText(this, "Could'nt upload room", Toast.LENGTH_SHORT).show();
     }
