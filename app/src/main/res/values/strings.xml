@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NavigateInsideUploader</string>
+    <string name="firstLaunch">firstlaunch</string>
 </resources>

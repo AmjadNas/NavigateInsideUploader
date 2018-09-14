@@ -90,9 +90,10 @@ public class ADNEBERACtivity extends AppCompatActivity implements SensorEventLis
     public void Save(View view) {
         String s1 = (String) node1.getSelectedItem();
         String s2 = (String) node2.getSelectedItem();
-
-        NetworkConnector.getInstance().pairNodes(s1, s2, mAzimuth, box.isChecked(), this);
-
+        if (!s1.equals(s2))
+            NetworkConnector.getInstance().pairNodes(s1, s2, mAzimuth, box.isChecked(), this);
+        else
+            Toast.makeText(this, "you can't add the same node as it's neighbour", Toast.LENGTH_SHORT).show();
 
     }
 

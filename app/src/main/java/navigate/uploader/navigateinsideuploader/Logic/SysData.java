@@ -77,13 +77,11 @@ public class SysData {
         Node node = new Node(bid,junction, Elevator, building, floar);
         node.setOutside(outside);
         node.setDirection(dir);
-        if(db.insertNode(Node.getContentValues(node))) {
-            insertImageToDB(bid, img);
+            node.setImage(img);
 
-            AllNodes.add(node);
-            return true;
-        }
-        return false;
+            return AllNodes.add(node);
+
+
     }
 
     public boolean linkNodes(String s1, String s2, int direction, boolean isdirect) {
@@ -91,27 +89,32 @@ public class SysData {
         Node node2 = getNodeByBeaconID(BeaconID.from(s2));
         int dir = (direction + 180) % 360;
 
-        if ( db.insertRelation(s1,s2, direction, isdirect)){
             node1.AddNeighbour(new Pair<Node, Integer>(node2, direction));
             node2.AddNeighbour(new Pair<Node, Integer>(node1, dir));
             return true;
-        }
-        return false;
+
 
     }
 
     public boolean insertRoomToNode(String bid, String num, String nm) {
 
         Node node = getNodeByBeaconID(BeaconID.from(bid));
-        if ( db.insertRoom(bid, nm, num)){
+
             node.AddRoom(new Room(num, nm));
             return true;
-        }
-        return false;
+
     }
 
     public void insertImageToDB(BeaconID currentBeacon,Bitmap res) {
         db.insertImage(currentBeacon, res);
+    }
+
+    public boolean insertNode(Node n) {
+
+
+
+            return AllNodes.add(n);
+
     }
 }
 

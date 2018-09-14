@@ -2,7 +2,11 @@ package navigate.uploader.navigateinsideuploader.Objects;
 
 import android.content.ContentValues;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.Pair;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -270,6 +274,31 @@ public class Node {
         direction = d;
     }
 
+    public static Node parseJson(JSONObject obj){
+        Node node =  null ;
+        try{
+
+            BeaconID BeaconId = BeaconID.from(obj.getString(Constants.BEACONID));
+            boolean junc = obj.getBoolean(Constants.Junction);
+            boolean Elev = obj.getBoolean(Constants.Elevator);
+            String building = obj.getString(Constants.Building);
+            String floor  = obj.getString(Constants.Floor);
+            boolean out = obj.getBoolean(Constants.Outside);
+            boolean nessout = obj.getBoolean(Constants.NessOutside);
+
+            node = new Node(BeaconId,junc,Elev,building,floor);
+            node.setOutside(out);
+            node.setNessOutside(nessout);
+
+
+
+            return node;
+        }catch (JSONException e){
+            Log.e("Exception :", e.getMessage());
+            return null;
+        }
+
+    }
 
     public static ContentValues getContentValues(Node node) {
         ContentValues cv = new ContentValues();

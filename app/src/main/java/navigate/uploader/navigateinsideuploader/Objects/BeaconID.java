@@ -8,16 +8,16 @@ import java.util.UUID;
 public class BeaconID implements Serializable{
 
     private UUID proximityUUID;
-    private int major;
-    private int minor;
+    private String major;
+    private String minor;
 
-    public BeaconID(UUID proximityUUID, int major, int minor) {
+    public BeaconID(UUID proximityUUID, String major, String minor) {
         this.proximityUUID = proximityUUID;
         this.major = major;
         this.minor = minor;
     }
 
-    public BeaconID(String UUIDString, int major, int minor) {
+    public BeaconID(String UUIDString, String major, String minor) {
         this(UUID.fromString(UUIDString), major, minor);
     }
 
@@ -25,17 +25,14 @@ public class BeaconID implements Serializable{
         return proximityUUID;
     }
 
-    public int getMajor() {
+    public String getMajor() {
         return major;
     }
 
-    public int getMinor() {
+    public String getMinor() {
         return minor;
     }
 
-    public BeaconRegion toBeaconRegion() {
-        return new BeaconRegion(toString(), getProximityUUID(), getMajor(), getMinor());
-    }
 
     public String toString() {
         return getProximityUUID().toString() + ":" + getMajor() + ":" + getMinor();
@@ -48,27 +45,18 @@ public class BeaconID implements Serializable{
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        if (o == this) {
-            return true;
-        }
+        BeaconID beaconID = (BeaconID) o;
 
-        if (getClass() != o.getClass()) {
-            return super.equals(o);
-        }
-
-        BeaconID other = (BeaconID) o;
-
-        return getProximityUUID().equals(other.getProximityUUID())
-                && getMajor() == other.getMajor()
-                && getMinor() == other.getMinor();
+        if (!proximityUUID.equals(beaconID.proximityUUID)) return false;
+        if (!major.equals(beaconID.major)) return false;
+        return minor.equals(beaconID.minor);
     }
 
     public static BeaconID from(String bid) {
         String[] id = bid.split(":");
-        return  new BeaconID(UUID.fromString(id[0]), Integer.parseInt(id[1]), Integer.parseInt(id[2]));
+        return  new BeaconID(UUID.fromString(id[0]), id[1], id[2]);
     }
 }

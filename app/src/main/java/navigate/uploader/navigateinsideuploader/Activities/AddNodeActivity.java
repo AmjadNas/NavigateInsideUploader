@@ -210,8 +210,8 @@ public class AddNodeActivity extends AppCompatActivity implements BeaconListener
         Node n;
         BeaconID id ;
         if(!major.getEditableText().toString().isEmpty() && !minor.getEditableText().toString().isEmpty()) {
-            int mjr = Integer.parseInt(major.getEditableText().toString());
-            int mnr = Integer.parseInt(minor.getEditableText().toString());
+            String mjr = major.getEditableText().toString();
+            String mnr = minor.getEditableText().toString();
             id = new BeaconID(Constants.DEFULTUID, mjr, mnr);
         }else
             id = currntID;
@@ -233,7 +233,9 @@ public class AddNodeActivity extends AppCompatActivity implements BeaconListener
 
     @Override
     public void onBeaconEvent(Beacon beacon) {
-        currntID = new BeaconID(beacon.getProximityUUID(), beacon.getMajor(), beacon.getMinor());
+        BeaconID tmp = new BeaconID(beacon.getProximityUUID(), String.valueOf(beacon.getMajor()), String.valueOf(beacon.getMinor()));
+        if (!tmp.equals(currntID))
+            currntID = tmp;
 
     }
 

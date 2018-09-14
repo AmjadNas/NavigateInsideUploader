@@ -59,18 +59,21 @@ public class AddRoomActivity extends AppCompatActivity implements NetworkResList
         String nm = name.getEditableText().toString();
         String num = number.getEditableText().toString();
         String bid = (String)node1.getSelectedItem();
-        String[] range = num.split("-");
-        int i, j;
+        if(!nm.isEmpty() && !num.isEmpty()){
+            String[] range = num.split("-");
+            int i, j;
 
-        if(range.length > 1){
-            j = Integer.parseInt(range[1]);
+            if(range.length > 1){
+                j = Integer.parseInt(range[1]);
+            }else
+                j = Integer.parseInt(range[0]);
+            i = Integer.parseInt(range[0]);
+
+            for(;i <= j; i++) {
+                NetworkConnector.getInstance().addRoomToNode(bid, String.valueOf(i),num, this);
+            }
         }else
-            j = Integer.parseInt(range[0]);
-        i = Integer.parseInt(range[0]);
-
-        for(;i <= j; i++) {
-            NetworkConnector.getInstance().addRoomToNode(bid, String.valueOf(i),num, this);
-        }
+            Toast.makeText(this, "there are some empty fields", Toast.LENGTH_SHORT).show();
 
     }
 

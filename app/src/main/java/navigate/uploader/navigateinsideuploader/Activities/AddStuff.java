@@ -1,6 +1,9 @@
 package navigate.uploader.navigateinsideuploader.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,14 +12,24 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import navigate.uploader.navigateinsideuploader.Logic.SysData;
 import navigate.uploader.navigateinsideuploader.Network.NetworkConnector;
+import navigate.uploader.navigateinsideuploader.Network.NetworkResListener;
+import navigate.uploader.navigateinsideuploader.Network.ResStatus;
+import navigate.uploader.navigateinsideuploader.Objects.Node;
+import navigate.uploader.navigateinsideuploader.Objects.Room;
 import navigate.uploader.navigateinsideuploader.R;
+import navigate.uploader.navigateinsideuploader.Utills.Constants;
 
-public class AddStuff extends AppCompatActivity {
+public class AddStuff extends AppCompatActivity implements NetworkResListener {
     
     private Button add, relate, addroom;
     private SysData data;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,7 +39,9 @@ public class AddStuff extends AppCompatActivity {
         NetworkConnector.getInstance().initialize(getApplicationContext());
         data = SysData.getInstance();
         data.initDatBase(getApplicationContext());
-        data.InitializeData();
+
+        NetworkConnector.getInstance().update(this);
+
         initView();
     }
 
@@ -59,11 +74,59 @@ public class AddStuff extends AppCompatActivity {
         });
     }
 
+
+
     @Override
     protected void onStop() {
         super.onStop();
         data.closeDatabase();
     }
 
+    @Override
+    public void onPreUpdate(String str) {
+
+    }
+
+    @Override
+    public void onPostUpdate(JSONObject res, ResStatus status) {
+        if(status == ResStatus.SUCCESS){
+            try {
+                JSONArray arr = res.getJSONArray(Constants.Node), nbers, rooms;
+                JSONObject o, nbr;
+                Node n;
+
+                for(int i = 0; i < arr.length(); i++){
+                    o = arr.getJSONObject(i);
+                    n = Node.parseJson(o);
+                    if(SysData.getInstance().insertNode(n)) {
+                        rooms = o.getJSONArray(Constants.ROOMS);
+                        Room r;
+
+                        for (int j = 0; j < rooms.length(); j++) {
+                            r = Room.parseJson(rooms.getJSONObject(j));
+                            SysData.getInstance().insertRoomToNode(n.get_id().toString(),r.GetRoomNum(),r.GetRoomName());
+                        }
+                    }
+                }
+                for(int i = 0; i < arr.length(); i++){
+                    o = arr.getJSONObject(i);
+                    nbers = o.getJSONArray(Constants.Node);
+
+                    for(int j = 0; j < nbers.length(); j++){
+                        nbr = nbers.getJSONObject(j);
+                        SysData.getInstance().linkNodes(o.getString(Constants.BEACONID), nbr.getString(Constants.BEACONID), nbr.getInt(Constants.Direction), false);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    @Override
+    public void onPostUpdate(Bitmap res, ResStatus status) {
+
+    }
 }
 
