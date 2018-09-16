@@ -139,7 +139,7 @@ public class DataBase extends SQLiteOpenHelper {
             major = Integer.parseInt(beaconID[1]);
             minor = Integer.parseInt(beaconID[2]);
 
-            Id = new BeaconID(UUID.fromString(beaconID[0]), major, minor);
+            Id = new BeaconID(UUID.fromString(beaconID[0]), String.valueOf(major), String.valueOf(minor));
 
             Node n = new Node(Id, false, false, r.getString(3), r.getString(4));
             n.setJunction(r.getInt(1));
@@ -175,7 +175,7 @@ public class DataBase extends SQLiteOpenHelper {
                 beaconID = r.getString(0).split(":");
                 major = Integer.parseInt(beaconID[1]);
                 minor = Integer.parseInt(beaconID[2]);
-                Id = new BeaconID(UUID.fromString(beaconID[0]), major, minor);
+                Id = new BeaconID(UUID.fromString(beaconID[0]), String.valueOf(major), String.valueOf(minor));
 
                 for (Node nb : nodes)
                     if (nb.get_id().equals(Id) && !nb.equals(n)) {
