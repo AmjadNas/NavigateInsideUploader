@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import navigate.uploader.navigateinsideuploader.Logic.MyApplication;
 import navigate.uploader.navigateinsideuploader.Logic.SysData;
 import navigate.uploader.navigateinsideuploader.Objects.Node;
+import navigate.uploader.navigateinsideuploader.Utills.Constants;
 
 public class ADNEBERACtivity extends AppCompatActivity implements SensorEventListener, NetworkResListener {
     private Spinner node1, node2;
@@ -91,7 +92,7 @@ public class ADNEBERACtivity extends AppCompatActivity implements SensorEventLis
         String s1 = (String) node1.getSelectedItem();
         String s2 = (String) node2.getSelectedItem();
         if (!s1.equals(s2))
-            NetworkConnector.getInstance().pairNodes(s1, s2, mAzimuth, box.isChecked(), this);
+            NetworkConnector.getInstance().pairNodes(Constants.DEFULTUID.toString()+":"+s1, Constants.DEFULTUID.toString()+":"+s2, mAzimuth, box.isChecked(), this);
         else
             Toast.makeText(this, "you can't add the same node as it's neighbour", Toast.LENGTH_SHORT).show();
 
