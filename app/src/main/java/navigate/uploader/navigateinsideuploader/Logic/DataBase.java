@@ -132,12 +132,12 @@ public class DataBase extends SQLiteOpenHelper {
         Cursor r = db.query(Constants.Node,projection,null,null,null,null,null);
         String[] beaconID;
         BeaconID Id;
-        int major, minor;
+        String major, minor;
         while(r.moveToNext()){
             beaconID = r.getString(0).split(":");
 
-            major = Integer.parseInt(beaconID[1]);
-            minor = Integer.parseInt(beaconID[2]);
+            major = beaconID[1];
+            minor = beaconID[2];
 
             Id = new BeaconID(UUID.fromString(beaconID[0]), major, minor);
 
@@ -166,15 +166,15 @@ public class DataBase extends SQLiteOpenHelper {
         Cursor r = null;
         String[] beaconID;
         BeaconID Id;
-        int major, minor;
+        String major, minor;
         int dir;
 
         for(Node n : nodes) {
             r = db.query(Constants.Relation, projection, Constants.FirstID + " = ?", new String[]{n.get_id().toString()}, null, null, null);
             while (r.moveToNext()) {
                 beaconID = r.getString(0).split(":");
-                major = Integer.parseInt(beaconID[1]);
-                minor = Integer.parseInt(beaconID[2]);
+                major = beaconID[1];
+                minor = beaconID[2];
                 Id = new BeaconID(UUID.fromString(beaconID[0]), major, minor);
 
                 for (Node nb : nodes)

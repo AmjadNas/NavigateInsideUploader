@@ -35,7 +35,7 @@ public class BeaconID implements Serializable{
 
 
     public String toString() {
-        return getProximityUUID().toString() + ":" + getMajor() + ":" + getMinor();
+        return   getMajor() + ":" + getMinor();
     }
 
     @Override
