@@ -98,25 +98,12 @@ public class AddStuff extends AppCompatActivity implements NetworkResListener {
                 for(int i = 0; i < arr.length(); i++){
                     o = arr.getJSONObject(i);
                     n = Node.parseJson(o);
-                    if(SysData.getInstance().insertNode(n)) {
-                        rooms = o.getJSONArray(Constants.ROOMS);
-                        Room r;
+                    if(n != null)
+                        SysData.getInstance().insertNode(n);
 
-                        for (int j = 0; j < rooms.length(); j++) {
-                            r = Room.parseJson(rooms.getJSONObject(j));
-                            SysData.getInstance().insertRoomToNode(n.get_id().toString(),r.GetRoomNum(),r.GetRoomName());
-                        }
-                    }
-                }
-                for(int i = 0; i < arr.length(); i++){
-                    o = arr.getJSONObject(i);
-                    nbers = o.getJSONArray(Constants.Node);
 
-                    for(int j = 0; j < nbers.length(); j++){
-                        nbr = nbers.getJSONObject(j);
-                        SysData.getInstance().linkNodes(o.getString(Constants.BEACONID), nbr.getString(Constants.BEACONID), nbr.getInt(Constants.Direction), false);
-                    }
                 }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

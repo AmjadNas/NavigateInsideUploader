@@ -296,6 +296,9 @@ public class Node {
         }catch (JSONException e){
             Log.e("Exception :", e.getMessage());
             return null;
+        }catch (Exception e){
+            e.printStackTrace();
+            return  null;
         }
 
     }

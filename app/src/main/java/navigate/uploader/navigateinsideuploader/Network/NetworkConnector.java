@@ -38,7 +38,7 @@ public class NetworkConnector {
 
     // server address
     private final String PORT = "8080";
-    private final String IP = "132.74.209.59";
+    private final String IP = "132.74.210.108";
     private final String HOST_URL = "http://" + IP + ":" + PORT +"/";
     private final String BASE_URL = HOST_URL + "projres";
 
@@ -205,7 +205,7 @@ public class NetworkConnector {
 
         Uri.Builder builder = new Uri.Builder();
         builder.appendQueryParameter(REQ , ADD_ROOM_TO_NODE);
-        builder.appendQueryParameter(Constants.BEACONID , data);
+        builder.appendQueryParameter(Constants.BEACONID , Constants.DEFULTUID.toString()+":"+data);
         builder.appendQueryParameter(Constants.NUMBER , number);
         builder.appendQueryParameter(Constants.NAME , name);
 
@@ -258,7 +258,7 @@ public class NetworkConnector {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put(Constants.BEACONID, item.get_id().toString());
+                params.put(Constants.BEACONID, Constants.DEFULTUID.toString()+":"+item.get_id().toString());
                 params.put(Constants.Junction, String.valueOf(item.isJunction()));
                 params.put(Constants.Elevator,  String.valueOf(item.isElevator()));
                 params.put(Constants.Outside, String.valueOf(item.isOutside()));

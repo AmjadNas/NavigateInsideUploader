@@ -70,7 +70,7 @@ public class AddRoomActivity extends AppCompatActivity implements NetworkResList
             i = Integer.parseInt(range[0]);
 
             for(;i <= j; i++) {
-                NetworkConnector.getInstance().addRoomToNode(bid, String.valueOf(i),num, this);
+                NetworkConnector.getInstance().addRoomToNode(bid, nm,String.valueOf(i), this);
             }
         }else
             Toast.makeText(this, "there are some empty fields", Toast.LENGTH_SHORT).show();
