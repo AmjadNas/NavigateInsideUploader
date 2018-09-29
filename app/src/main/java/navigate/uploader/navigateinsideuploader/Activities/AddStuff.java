@@ -1,16 +1,12 @@
 package navigate.uploader.navigateinsideuploader.Activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,13 +17,12 @@ import navigate.uploader.navigateinsideuploader.Network.NetworkConnector;
 import navigate.uploader.navigateinsideuploader.Network.NetworkResListener;
 import navigate.uploader.navigateinsideuploader.Network.ResStatus;
 import navigate.uploader.navigateinsideuploader.Objects.Node;
-import navigate.uploader.navigateinsideuploader.Objects.Room;
 import navigate.uploader.navigateinsideuploader.R;
 import navigate.uploader.navigateinsideuploader.Utills.Constants;
 
 public class AddStuff extends AppCompatActivity implements NetworkResListener {
     
-    private Button add, relate, addroom;
+    private Button add, relate, addroom, addimage;
     private SysData data;
 
 
@@ -50,6 +45,7 @@ public class AddStuff extends AppCompatActivity implements NetworkResListener {
         addroom = (Button) findViewById(R.id.addRoom_btn);
         add = (Button) findViewById(R.id.addnode);
         relate = (Button) findViewById(R.id.relaetnode);
+        addimage = (Button) findViewById(R.id.addimage);
 
         addroom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +65,13 @@ public class AddStuff extends AppCompatActivity implements NetworkResListener {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddStuff.this, ADNEBERACtivity.class);
+                startActivity(intent);
+            }
+        });
+        addimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AddStuff.this, AddNodeImageActivity.class);
                 startActivity(intent);
             }
         });

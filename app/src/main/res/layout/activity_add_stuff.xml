@@ -1,19 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-    <RelativeLayout android:layout_height="match_parent" android:layout_width="match_parent" android:orientation="vertical" xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    -<LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:orientation="vertical" android:layout_alignParentStart="true" android:layout_alignParentTop="true" android:layout_marginTop="115dp" android:id="@+id/frame">
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/addRoom_btn"
+        android:text="Add room to node"
+        android:layout_margin="10dp"/>
 
-    <!--<EditText android:id="@+id/start" android:layout_width="362dp" android:layout_height="wrap_content" android:layout_margin="10dp" android:ems="10" android:hint="What do you see ?" android:inputType="textPersonName" /> <EditText android:id="@+id/goal" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="10dp" android:ems="10" android:hint="Where you want to go?" android:inputType="textPersonName" /> <CheckBox android:id="@+id/elevator" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="10dp" android:text="go through elevator" /> <Button android:id="@+id/search" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="10dp" android:text="Search"/> -->
+    <Button
+        android:id="@+id/relaetnode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:text="add Relations" />
+
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/addnode"
+        android:text="add node"
+        android:layout_margin="10dp"/>
+
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/addimage"
+        android:text="add image"
+        android:layout_margin="10dp"/>
 
 
-    <Button android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/addRoom_btn" android:text="Add room to node" android:layout_margin="10dp"/>
-
-    <Button android:layout_height="wrap_content" android:layout_width="match_parent" android:layout_alignParentTop="true" android:layout_marginTop="42dp" android:id="@+id/relaetnode" android:text="add Relations" android:layout_marginRight="10dp" android:layout_marginLeft="10dp" android:layout_centerHorizontal="true"/>
-
-    <Button android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/addnode" android:text="add node" android:layout_margin="10dp"/>
 
 </LinearLayout>
-
-</RelativeLayout>

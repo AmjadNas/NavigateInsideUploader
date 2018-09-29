@@ -132,6 +132,10 @@ public class NetworkConnector {
         getRequestQueue().add(jsObjRequest);
     }
 
+    public void uploadImage(Bitmap img, String id, int num, int dir, NetworkResListener listener){
+        uploadItemImage(img, id, num, dir, listener);
+    }
+
     private void addImageRequestToQueue(String query, final NetworkResListener listener){
 
         String reqUrl = BASE_URL + "?" + query;
@@ -178,7 +182,18 @@ public class NetworkConnector {
                 break;
             }
             case INSERT_NODE:{
-                uploadItemImage(data, listener);
+                builder.appendQueryParameter(REQ , INSERT_NODE);
+                builder.appendQueryParameter(Constants.BEACONID, Constants.DEFULTUID.toString()+":"+data.get_id().toString());
+                builder.appendQueryParameter(Constants.Junction, String.valueOf(data.isJunction()));
+                builder.appendQueryParameter(Constants.Elevator,  String.valueOf(data.isElevator()));
+                builder.appendQueryParameter(Constants.Outside, String.valueOf(data.isOutside()));
+                builder.appendQueryParameter(Constants.NessOutside, String.valueOf(data.isNessOutside()));
+                builder.appendQueryParameter(Constants.Direction, String.valueOf(data.getDirection()));
+                builder.appendQueryParameter(Constants.Building, data.getBuilding());
+                builder.appendQueryParameter(Constants.Floor, data.getFloor());
+
+                String query = builder.build().getEncodedQuery();
+                addToRequestQueue(query, listener);
                 break;
             }
         }
@@ -213,7 +228,7 @@ public class NetworkConnector {
         addToRequestQueue(query, listener);
     }
 
-    private void uploadItemImage(final Node item, final NetworkResListener listener) {
+    private void uploadItemImage(final Bitmap img, final String id, final int num, final int dir,  final NetworkResListener listener) {
 
         String reqUrl = HOST_URL + "web_item_manage?";
         notifyPreUpdateListeners(listener);
@@ -258,14 +273,9 @@ public class NetworkConnector {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put(Constants.BEACONID, Constants.DEFULTUID.toString()+":"+item.get_id().toString());
-                params.put(Constants.Junction, String.valueOf(item.isJunction()));
-                params.put(Constants.Elevator,  String.valueOf(item.isElevator()));
-                params.put(Constants.Outside, String.valueOf(item.isOutside()));
-                params.put(Constants.NessOutside, String.valueOf(item.isNessOutside()));
-                params.put(Constants.Direction, String.valueOf(item.getDirection()));
-                params.put(Constants.Building, item.getBuilding());
-                params.put(Constants.Floor, item.getFloor());
+                params.put(Constants.BEACONID, id);
+                params.put(Constants.IMAGENUM, String.valueOf(num));
+                params.put(Constants.Direction, String.valueOf(dir));
                 return params;
             }
 
@@ -276,7 +286,7 @@ public class NetworkConnector {
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
                 long imagename = System.currentTimeMillis();
-                byte[] pic = Converter.getBitmapAsByteArray(item.getImage(), 100);
+                byte[] pic = Converter.getBitmapAsByteArray(img, 100);
                 params.put("fileField", new DataPart(imagename + ".png", pic));
                 return params;
             }

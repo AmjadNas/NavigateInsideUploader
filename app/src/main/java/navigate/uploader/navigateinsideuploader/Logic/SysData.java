@@ -73,11 +73,10 @@ public class SysData {
 
 
     }
-    public boolean saveNode(BeaconID bid,  String floar, String building, boolean junction, boolean Elevator, boolean outside, Bitmap img,int dir) {
+    public boolean saveNode(BeaconID bid,  String floar, String building, boolean junction, boolean Elevator, boolean outside,int dir) {
         Node node = new Node(bid,junction, Elevator, building, floar);
         node.setOutside(outside);
         node.setDirection(dir);
-            node.setImage(img);
 
             return AllNodes.add(node);
 
