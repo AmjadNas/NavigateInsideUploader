@@ -58,6 +58,7 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
     private SensorManager mSensorManager;
     private Sensor mSensor;
     private EditText imageNumber;
+    private TextView dirct;
     private Spinner nodes;
     private float[] rMat = new float[9];
     private float[] orientation = new float[3];
@@ -74,7 +75,7 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
         data = SysData.getInstance();
         initSpinner();
         imageNumber = (EditText)findViewById(R.id.image_number);
-
+        dirct = (TextView) findViewById(R.id.dir);
         panoWidgetView = (ImageView) findViewById(R.id.thumb_add_node);
 
         initSensor();
@@ -148,6 +149,7 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
             SensorManager.getRotationMatrixFromVector(rMat, event.values);
             // get the azimuth value (orientation[0]) in degree
             mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
+            dirct.setText(String.valueOf(mAzimuth));
         }
     }
 
