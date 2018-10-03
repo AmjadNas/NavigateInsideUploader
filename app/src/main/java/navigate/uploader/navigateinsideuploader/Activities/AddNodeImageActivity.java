@@ -48,11 +48,10 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
 
     private final static int IMAGE_CAPTUE_REQ = 1;
     private static final int PICK_IMAGE = 111;
-    private TextView major, floar, building,minor;
-    private CheckBox elevator, junction, outside;
     private Bitmap img;
     private SysData data;
     private BeaconID currntID;
+    private int minDir = -1;
 
     // device sensor manager
     private SensorManager mSensorManager;
@@ -149,7 +148,8 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
             SensorManager.getRotationMatrixFromVector(rMat, event.values);
             // get the azimuth value (orientation[0]) in degree
             mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
-            dirct.setText(String.valueOf(mAzimuth));
+            if (minDir < 0)
+                dirct.setText(String.valueOf(mAzimuth));
         }
     }
 
@@ -187,7 +187,7 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
         }else {
             int number = Integer.parseInt(imageNumber.getEditableText().toString());
             String id = (String)nodes.getSelectedItem();
-            NetworkConnector.getInstance().uploadImage(img, id, number, mAzimuth, this);
+            NetworkConnector.getInstance().uploadImage(img, id, number, minDir, this);
         }
     }
 
@@ -216,5 +216,12 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
     @Override
     public void onPostUpdate(Bitmap res, ResStatus status) {
 
+    }
+
+    public void Record(View view) {
+        if(minDir < 0){
+            minDir = mAzimuth;
+
+        }
     }
 }

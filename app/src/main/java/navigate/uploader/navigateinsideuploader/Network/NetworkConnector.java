@@ -38,7 +38,7 @@ public class NetworkConnector {
 
     // server address
     private final String PORT = "8080";
-    private final String IP = "132.74.208.153";
+    private final String IP = "132.74.209.118";
     private final String HOST_URL = "http://" + IP + ":" + PORT +"/";
     private final String BASE_URL = HOST_URL + "projres";
 
@@ -228,7 +228,7 @@ public class NetworkConnector {
         addToRequestQueue(query, listener);
     }
 
-    private void uploadItemImage(final Bitmap img, final String id, final int num, final int dir,  final NetworkResListener listener) {
+    private void uploadItemImage(final Bitmap img, final String id, final int num, final int dir, final NetworkResListener listener) {
 
         String reqUrl = HOST_URL + "web_item_manage?";
         notifyPreUpdateListeners(listener);
