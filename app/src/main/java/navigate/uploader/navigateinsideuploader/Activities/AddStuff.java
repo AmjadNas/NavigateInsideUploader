@@ -44,7 +44,6 @@ public class AddStuff extends AppCompatActivity implements NetworkResListener {
 
         addroom = (Button) findViewById(R.id.addRoom_btn);
         add = (Button) findViewById(R.id.addnode);
-        relate = (Button) findViewById(R.id.relaetnode);
         addimage = (Button) findViewById(R.id.addimage);
 
         addroom.setOnClickListener(new View.OnClickListener() {
@@ -58,13 +57,6 @@ public class AddStuff extends AppCompatActivity implements NetworkResListener {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddStuff.this, AddNodeActivity.class);
-                startActivity(intent);
-            }
-        });
-        relate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AddStuff.this, ADNEBERACtivity.class);
                 startActivity(intent);
             }
         });

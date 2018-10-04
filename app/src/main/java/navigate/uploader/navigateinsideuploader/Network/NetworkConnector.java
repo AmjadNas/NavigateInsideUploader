@@ -47,7 +47,6 @@ public class NetworkConnector {
     public static final String GET_NODE_IMAGE = "1";
     public static final String INSERT_NODE = "2";
     public static final String ADD_ROOM_TO_NODE = "3";
-    public static final String PAIR_NODES = "4";
     public static final String DELETE_NODE = "5";
 
     private String tempReq;
@@ -132,10 +131,6 @@ public class NetworkConnector {
         getRequestQueue().add(jsObjRequest);
     }
 
-    public void uploadImage(Bitmap img, String id, int num, int dir, NetworkResListener listener){
-        uploadItemImage(img, id, num, dir, listener);
-    }
-
     private void addImageRequestToQueue(String query, final NetworkResListener listener){
 
         String reqUrl = BASE_URL + "?" + query;
@@ -199,20 +194,11 @@ public class NetworkConnector {
         }
     }
 
-    public void pairNodes(String n1, String n2 , int direction, boolean isDirect, NetworkResListener listener){
+    public void pairNodes(String n1, String n2 , Bitmap img, int direction, boolean isDirect, NetworkResListener listener){
         if(n1 == null || n2 == null){
             return;
         }
-
-        Uri.Builder builder = new Uri.Builder();
-        builder.appendQueryParameter(REQ , PAIR_NODES);
-        builder.appendQueryParameter(Constants.FirstID , n1);
-        builder.appendQueryParameter(Constants.SecondID , n2);
-        builder.appendQueryParameter(Constants.Direction , String.valueOf(direction));
-        builder.appendQueryParameter(Constants.DIRECT, String.valueOf(isDirect));
-
-        String query = builder.build().getEncodedQuery();
-        addToRequestQueue(query, listener);
+        uploadItemImage(img, n1, n2, direction, isDirect, listener);
 
     }
 
@@ -228,7 +214,7 @@ public class NetworkConnector {
         addToRequestQueue(query, listener);
     }
 
-    private void uploadItemImage(final Bitmap img, final String id, final int num, final int dir, final NetworkResListener listener) {
+    private void uploadItemImage(final Bitmap img, final String id, final String id2, final int dir, final boolean isDir, final NetworkResListener listener) {
 
         String reqUrl = HOST_URL + "web_item_manage?";
         notifyPreUpdateListeners(listener);
@@ -273,9 +259,10 @@ public class NetworkConnector {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put(Constants.BEACONID, id);
-                params.put(Constants.IMAGENUM, String.valueOf(num));
+                params.put(Constants.FirstID, id);
+                params.put(Constants.SecondID, id2);
                 params.put(Constants.Direction, String.valueOf(dir));
+                params.put(Constants.DIRECT, String.valueOf(isDir));
                 return params;
             }
 

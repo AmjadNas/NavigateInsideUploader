@@ -14,16 +14,7 @@
         android:text="Add room to node"
         android:layout_margin="10dp"/>
 
-    <Button
-        android:id="@+id/relaetnode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
-        android:text="add Relations" />
-
-    <Button
+        <Button
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:id="@+id/addnode"
@@ -34,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:id="@+id/addimage"
-        android:text="add image"
+        android:text="pair nodes"
         android:layout_margin="10dp"/>
 
 
