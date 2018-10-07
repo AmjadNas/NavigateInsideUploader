@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import navigate.uploader.navigateinsideuploader.Logic.Compass;
 import navigate.uploader.navigateinsideuploader.Logic.Listeners.BeaconListener;
 import navigate.uploader.navigateinsideuploader.Logic.MyApplication;
 import navigate.uploader.navigateinsideuploader.Logic.SysData;
@@ -44,7 +45,7 @@ import navigate.uploader.navigateinsideuploader.Utills.Constants;
 import navigate.uploader.navigateinsideuploader.Utills.Converter;
 import navigate.uploader.navigateinsideuploader.R;
 
-public class AddNodeImageActivity extends AppCompatActivity implements SensorEventListener, NetworkResListener {
+public class AddNodeImageActivity extends AppCompatActivity implements NetworkResListener, Compass.CompassListener {
 
     private final static int IMAGE_CAPTUE_REQ = 1;
     private static final int PICK_IMAGE = 111;
@@ -53,19 +54,14 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
     private BeaconID currntID;
     private int minDir = -1;
 
-    // device sensor manager
-    private SensorManager mSensorManager;
-    private Sensor mSensor;
+    private Compass compass;
     private TextView dirct;
     private Spinner nodes;
-    private float[] rMat = new float[9];
-    private float[] orientation = new float[3];
-    // azimuth and current page position
-    private int mAzimuth;
 
     private ImageView panoWidgetView;
     private Bitmap tmp;
     private Spinner node2;
+    private int mAzimuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +73,11 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
         panoWidgetView = (ImageView) findViewById(R.id.thumb_add_node);
 
         initSensor();
+    }
+
+    private void initSensor() {
+        compass = new Compass(this);
+        compass.setListener(this);
     }
 
     private void initSpinner() {
@@ -110,13 +111,6 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
 
     }
 
-
-    private void initSensor(){
-        // initialize your android device sensor capabilities
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR );
-    }
-
     /**
      * launch cam or get photo from gallery
      * @param view
@@ -134,33 +128,17 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
     protected void onResume() {
         super.onResume();
         // for the system's orientation sensor registered listeners
-        mSensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL);
+        compass.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         // to stop the listener and save battery
-        mSensorManager.unregisterListener(this);
+        compass.stop();
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
 
-        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            // calculate th rotation matrix
-            SensorManager.getRotationMatrixFromVector(rMat, event.values);
-            // get the azimuth value (orientation[0]) in degree
-            mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
-            if (minDir < 0)
-                dirct.setText(String.valueOf(mAzimuth));
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -226,7 +204,9 @@ public class AddNodeImageActivity extends AppCompatActivity implements SensorEve
 
     }
 
-    public void Record(View view) {
-
+    @Override
+    public void onNewAzimuth(float azimuth) {
+        mAzimuth = (int)azimuth;
+        dirct.setText(String.valueOf(mAzimuth));
     }
 }
