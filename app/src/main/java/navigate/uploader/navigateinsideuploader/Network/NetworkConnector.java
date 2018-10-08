@@ -38,7 +38,7 @@ public class NetworkConnector {
 
     // server address
     private final String PORT = "8080";
-    private final String IP = "132.74.209.118";
+    private final String IP = "132.74.210.25";
     private final String HOST_URL = "http://" + IP + ":" + PORT +"/";
     private final String BASE_URL = HOST_URL + "projres";
 

@@ -178,11 +178,11 @@ public class AddNodeImageActivity extends AppCompatActivity implements NetworkRe
                     // get image using content resolver
                     imageStream = getContentResolver().openInputStream(selectedImage);
                     img = BitmapFactory.decodeStream(imageStream);
-                    loadImageto3D(img);
                 } catch (FileNotFoundException e) {
                     Log.e("ERROR:","Loading file failed");
                 }
             }
+            loadImageto3D(img);
         }
     }
 
