@@ -1,5 +1,6 @@
 package navigate.uploader.navigateinsideuploader.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -116,10 +119,30 @@ public class AddNodeImageActivity extends AppCompatActivity implements NetworkRe
      * @param view
      */
     public void onClickCam(View view) {
-        Intent intent = new Intent();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.pickone)
+                .setItems(R.array.choice, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0){
+                            Intent intent = new Intent();
+                            intent.setType("image/*");
+                            intent.setAction(Intent.ACTION_GET_CONTENT);
+                            startActivityForResult(Intent.createChooser(intent, getString(R.string.selectpick)), PICK_IMAGE);
+                        }else if (which == 1){
+                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            startActivityForResult(intent,IMAGE_CAPTUE_REQ);
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+       /* Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "select"), PICK_IMAGE);
+        startActivityForResult(Intent.createChooser(intent, "select"), PICK_IMAGE);*/
 
 
     }

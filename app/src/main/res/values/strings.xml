@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">NavigateInsideUploader</string>
     <string name="firstLaunch">firstlaunch</string>
+    <string-array name="choice">
+        <item>From Gallery</item>
+        <item>Capture Image</item>
+    </string-array>
+    <string name="pickone">Pick One :</string>
+    <string name="selectpick">Select Picture</string>
+
 </resources>
