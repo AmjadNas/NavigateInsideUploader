@@ -6,7 +6,9 @@ import android.os.AsyncTask;
 import navigate.uploader.navigateinsideuploader.Logic.Listeners.ImageLoadedListener;
 import navigate.uploader.navigateinsideuploader.Logic.SysData;
 import navigate.uploader.navigateinsideuploader.Objects.BeaconID;
-
+/**
+ * class for loading images on a new thread
+ */
 public class ImageLoader extends AsyncTask<Bitmap,Bitmap,Bitmap> {
     private boolean downloaded;
     private ImageLoadedListener imageLoadedListener;
@@ -19,8 +21,6 @@ public class ImageLoader extends AsyncTask<Bitmap,Bitmap,Bitmap> {
     }
     @Override
     protected Bitmap doInBackground(Bitmap... bitmaps) {
-        if (downloaded)
-            SysData.getInstance().insertImageToDB(currentID, bitmaps[0]);
 
         return Converter.getImageTHumbnail(bitmaps[0]);
     }

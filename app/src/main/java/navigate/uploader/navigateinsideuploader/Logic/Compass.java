@@ -6,6 +6,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+/**
+ *  Source :{https://github.com/iutinvg/compass}
+ *  Author: Viacheslav Iutin
+ */
 public class Compass implements SensorEventListener {
     private static final String TAG = "Compass";
 
@@ -28,6 +32,7 @@ public class Compass implements SensorEventListener {
     private float azimuthFix;
 
     public Compass(Context context) {
+        //initialize sensor types
         sensorManager = (SensorManager) context
                 .getSystemService(Context.SENSOR_SERVICE);
         gsensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -35,6 +40,7 @@ public class Compass implements SensorEventListener {
     }
 
     public void start() {
+        // define desired delay types
         sensorManager.registerListener(this, gsensor,
                 SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(this, msensor,
@@ -60,7 +66,7 @@ public class Compass implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         final float alpha = 0.97f;
-
+        /* the code below helps the sensor thrashing problem */
         synchronized (this) {
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 

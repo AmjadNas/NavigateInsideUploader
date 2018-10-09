@@ -22,7 +22,7 @@ import navigate.uploader.navigateinsideuploader.Utills.Constants;
 
 public class AddStuff extends AppCompatActivity implements NetworkResListener {
     
-    private Button add, relate, addroom, addimage;
+    private Button add, addroom, addimage;
     private SysData data;
 
 
@@ -30,16 +30,18 @@ public class AddStuff extends AppCompatActivity implements NetworkResListener {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_stuff);
-
+        // initialize network connection handler to server and system instance
         NetworkConnector.getInstance().initialize(getApplicationContext());
         data = SysData.getInstance();
-        data.initDatBase(getApplicationContext());
 
         NetworkConnector.getInstance().update(this);
 
         initView();
     }
 
+    /**
+     * helper method to initialize view and their click events
+     */
     private void initView(){
 
         addroom = (Button) findViewById(R.id.addRoom_btn);
@@ -69,14 +71,6 @@ public class AddStuff extends AppCompatActivity implements NetworkResListener {
         });
     }
 
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        data.closeDatabase();
-    }
-
     @Override
     public void onPreUpdate(String str) {
 
@@ -86,6 +80,7 @@ public class AddStuff extends AppCompatActivity implements NetworkResListener {
     public void onPostUpdate(JSONObject res, ResStatus status) {
         if(status == ResStatus.SUCCESS){
             try {
+                // parse json and save data
                 JSONArray arr = res.getJSONArray(Constants.Node), nbers, rooms;
                 JSONObject o, nbr;
                 Node n;

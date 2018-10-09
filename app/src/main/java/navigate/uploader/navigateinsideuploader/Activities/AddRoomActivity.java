@@ -34,7 +34,7 @@ public class AddRoomActivity extends AppCompatActivity implements NetworkResList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_room);
-
+        // initialize views and spinner
         node1 = (Spinner) findViewById(R.id.spinner1);
         data = SysData.getInstance();
 
@@ -55,21 +55,25 @@ public class AddRoomActivity extends AppCompatActivity implements NetworkResList
         node1.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, strings));
     }
 
+    /**
+     * handle add room click event
+     * @param view
+     */
     public void addRoom(View view) {
         String nm = name.getEditableText().toString();
         String num = number.getEditableText().toString();
         String bid = (String)node1.getSelectedItem();
-        if(!nm.isEmpty() && !num.isEmpty()){
+        if(!nm.isEmpty() && !num.isEmpty()){ // check for missing fields
             String[] range = num.split("-");
             int i, j;
 
-            if(range.length > 1){
+            if(range.length > 1){ // if the rooms added from range x to y
                 j = Integer.parseInt(range[1]);
-            }else
+            }else // if single room added
                 j = Integer.parseInt(range[0]);
             i = Integer.parseInt(range[0]);
 
-            for(;i <= j; i++) {
+            for(;i <= j; i++) { // upload data
                 NetworkConnector.getInstance().addRoomToNode(bid, nm,String.valueOf(i), this);
             }
         }else
@@ -89,6 +93,7 @@ public class AddRoomActivity extends AppCompatActivity implements NetworkResList
     @Override
     public void onPostUpdate(JSONObject res, ResStatus status) {
         if (status == ResStatus.SUCCESS){
+            // add rooms to nodes system list if the upload was successful
             String nm = name.getEditableText().toString();
             String num = number.getEditableText().toString();
             String bid = (String)node1.getSelectedItem();

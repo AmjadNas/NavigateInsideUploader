@@ -30,7 +30,7 @@ import navigate.uploader.navigateinsideuploader.Utills.Converter;
 
 
 public class NetworkConnector {
-
+    // singleton pattern
     private static NetworkConnector mInstance;
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
@@ -68,6 +68,7 @@ public class NetworkConnector {
     }
 
     public void initialize(Context context){
+        // initialize request repeater and image loader cache
         mCtx = context;
         mRequestQueue = getRequestQueue();
 
@@ -101,7 +102,7 @@ public class NetworkConnector {
 
         String reqUrl = BASE_URL + "?" + query;
         notifyPreUpdateListeners(listener);
-
+        // set on response handlers
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.POST, reqUrl, null, new Response.Listener<JSONObject>() {
 
@@ -127,7 +128,7 @@ public class NetworkConnector {
 
                     }
                 });
-
+        // send request
         getRequestQueue().add(jsObjRequest);
     }
 
@@ -136,7 +137,7 @@ public class NetworkConnector {
         String reqUrl = BASE_URL + "?" + query;
 
         notifyPreUpdateListeners(listener);
-
+        // set on response handlers and send request to fetch image
         getImageLoader().get(reqUrl, new ImageLoader.ImageListener() {
             @Override
             public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
@@ -155,8 +156,13 @@ public class NetworkConnector {
     private ImageLoader getImageLoader() {
         return mImageLoader;
     }
-    
 
+    /**
+     * performs operations dependant on the node data and the requests
+     * @param requestCode
+     * @param data
+     * @param listener
+     */
     public void sendRequestToServer(String requestCode, Node data, NetworkResListener listener){
 
         if(data==null){
@@ -177,23 +183,36 @@ public class NetworkConnector {
                 break;
             }
             case INSERT_NODE:{
-                builder.appendQueryParameter(REQ , INSERT_NODE);
-                builder.appendQueryParameter(Constants.BEACONID, Constants.DEFULTUID.toString()+":"+data.get_id().toString());
-                builder.appendQueryParameter(Constants.Junction, String.valueOf(data.isJunction()));
-                builder.appendQueryParameter(Constants.Elevator,  String.valueOf(data.isElevator()));
-                builder.appendQueryParameter(Constants.Outside, String.valueOf(data.isOutside()));
-                builder.appendQueryParameter(Constants.NessOutside, String.valueOf(data.isNessOutside()));
-                builder.appendQueryParameter(Constants.Direction, String.valueOf(data.getDirection()));
-                builder.appendQueryParameter(Constants.Building, data.getBuilding());
-                builder.appendQueryParameter(Constants.Floor, data.getFloor());
+                if (data.getImage() == null) { // upload node without an image
+                    builder.appendQueryParameter(REQ, INSERT_NODE);
+                    builder.appendQueryParameter(Constants.BEACONID, Constants.DEFULTUID.toString() + ":" + data.get_id().toString());
+                    builder.appendQueryParameter(Constants.Junction, String.valueOf(data.isJunction()));
+                    builder.appendQueryParameter(Constants.Elevator, String.valueOf(data.isElevator()));
+                    builder.appendQueryParameter(Constants.Outside, String.valueOf(data.isOutside()));
+                    builder.appendQueryParameter(Constants.NessOutside, String.valueOf(data.isNessOutside()));
+                    builder.appendQueryParameter(Constants.Direction, String.valueOf(data.getDirection()));
+                    builder.appendQueryParameter(Constants.Building, data.getBuilding());
+                    builder.appendQueryParameter(Constants.Floor, data.getFloor());
 
-                String query = builder.build().getEncodedQuery();
-                addToRequestQueue(query, listener);
+                    String query = builder.build().getEncodedQuery();
+                    addToRequestQueue(query, listener);
+                }else { // upload node with an image
+                    uploadNode(data, listener);
+                }
                 break;
             }
         }
     }
 
+    /**
+     * upload edge relation and the image related to it
+     * @param n1 first id
+     * @param n2 second id
+     * @param img related image
+     * @param direction
+     * @param isDirect
+     * @param listener
+     */
     public void pairNodes(String n1, String n2 , Bitmap img, int direction, boolean isDirect, NetworkResListener listener){
         if(n1 == null || n2 == null){
             return;
@@ -214,6 +233,93 @@ public class NetworkConnector {
         addToRequestQueue(query, listener);
     }
 
+    /**
+     * helper method to upload the node with an image
+     * @param node
+     * @param listener
+     */
+    private void uploadNode(final Node node, final NetworkResListener listener){
+
+        String reqUrl = HOST_URL + "web_node_manage?";
+        notifyPreUpdateListeners(listener);
+
+        //our custom volley request
+        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, reqUrl,
+                new Response.Listener<NetworkResponse>() {
+                    @Override
+                    public void onResponse(NetworkResponse response) {
+                        try {
+                            JSONObject obj = new JSONObject(new String(response.data));
+                            Toast.makeText(mCtx, obj.getString("message"), Toast.LENGTH_SHORT).show();
+                            notifyPostUpdateListeners(obj, ResStatus.SUCCESS, listener);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(mCtx, error.getMessage(), Toast.LENGTH_SHORT).show();
+                        JSONObject obj = null;
+                        try {
+                            obj = new JSONObject(RESOURCE_FAIL_TAG );
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+                            notifyPostUpdateListeners(obj, ResStatus.FAIL, listener);
+                        }
+
+                    }
+                }) {
+
+            /*
+             * If you want to add more parameters with the image
+             * you can do it here
+             * here we have only one parameter with the image
+             * which is tags
+             * */
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put(Constants.BEACONID, Constants.DEFULTUID.toString() + ":" + node.get_id().toString());
+                params.put(Constants.Junction, String.valueOf(node.isJunction()));
+                params.put(Constants.Elevator, String.valueOf(node.isElevator()));
+                params.put(Constants.Outside, String.valueOf(node.isOutside()));
+                params.put(Constants.NessOutside, String.valueOf(node.isNessOutside()));
+                params.put(Constants.Direction, String.valueOf(node.getDirection()));
+                params.put(Constants.Building, node.getBuilding());
+                params.put(Constants.Floor, node.getFloor());
+                return params;
+            }
+
+            /*
+             * Here we are passing image by renaming it with a unique name
+             * */
+            @Override
+            protected Map<String, DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+                long imagename = System.currentTimeMillis();
+                byte[] pic = Converter.getBitmapAsByteArray(node.getImage(), 100);
+                params.put("fileField", new DataPart(imagename + ".png", pic));
+                return params;
+            }
+        };
+
+        //adding the request to volley
+        getRequestQueue().add(volleyMultipartRequest);
+    }
+
+    /**
+     * helper method to upload the edge with an image
+     * @param img
+     * @param id
+     * @param id2
+     * @param dir
+     * @param isDir
+     * @param listener
+     */
     private void uploadItemImage(final Bitmap img, final String id, final String id2, final int dir, final boolean isDir, final NetworkResListener listener) {
 
         String reqUrl = HOST_URL + "web_item_manage?";
@@ -283,15 +389,19 @@ public class NetworkConnector {
         getRequestQueue().add(volleyMultipartRequest);
     }
 
+    /**
+     * dowload all data from the online database
+     * @param listener
+     */
     public void update(NetworkResListener listener){
 
         Uri.Builder builder = new Uri.Builder();
         builder.appendQueryParameter(REQ , GET_ALL_NODES_JSON_REQ);
+        builder.appendQueryParameter(Constants.ID , "-1");
         String query = builder.build().getEncodedQuery();
 
         addToRequestQueue(query, listener);
     }
-
 
     private  void notifyPostBitmapUpdateListeners(final Bitmap res, final ResStatus status, final NetworkResListener listener) {
 

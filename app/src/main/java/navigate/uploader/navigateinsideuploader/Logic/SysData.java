@@ -17,7 +17,7 @@ public class SysData {
     //Its should contain Nodes List
     private static SysData instance = null;
     private ArrayList<Node> AllNodes;
-    private DataBase db;
+
 
     private SysData(){
         AllNodes = new ArrayList<>();
@@ -45,14 +45,7 @@ public class SysData {
     }
 
 
-    public void initDatBase(Context context){
-        db = new DataBase(context);
-    }
 
-    public void closeDatabase(){
-        if(db != null)
-            db.close();
-    }
 
     public Node getNodeByBeaconID(BeaconID bid) {
         for (Node node : AllNodes)
@@ -68,11 +61,7 @@ public class SysData {
 
         return img;
     }*/
-    public void InitializeData(){
-        db.getNodes(AllNodes);
 
-
-    }
     public boolean saveNode(BeaconID bid,  String floar, String building, boolean junction, boolean Elevator, boolean outside,int dir) {
         Node node = new Node(bid,junction, Elevator, building, floar);
         node.setOutside(outside);
@@ -104,16 +93,10 @@ public class SysData {
 
     }
 
-    public void insertImageToDB(BeaconID currentBeacon,Bitmap res) {
-        db.insertImage(currentBeacon, res);
-    }
-
     public boolean insertNode(Node n) {
-
-
-
+        if (!AllNodes.contains(n))
             return AllNodes.add(n);
-
+        return false;
     }
 }
 

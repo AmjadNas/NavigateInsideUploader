@@ -49,14 +49,12 @@ import navigate.uploader.navigateinsideuploader.Utills.Converter;
 import navigate.uploader.navigateinsideuploader.R;
 
 public class AddNodeImageActivity extends AppCompatActivity implements NetworkResListener, Compass.CompassListener {
-
+    // image capture requests
     private final static int IMAGE_CAPTUE_REQ = 1;
     private static final int PICK_IMAGE = 111;
     private Bitmap img;
     private SysData data;
-    private BeaconID currntID;
-    private int minDir = -1;
-
+    // sensor class
     private Compass compass;
     private TextView dirct;
     private Spinner nodes;
@@ -78,11 +76,17 @@ public class AddNodeImageActivity extends AppCompatActivity implements NetworkRe
         initSensor();
     }
 
+    /**
+     * helper method to initialize the sensor
+     */
     private void initSensor() {
         compass = new Compass(this);
         compass.setListener(this);
     }
 
+    /**
+     * helper method to initialize the spinner views
+     */
     private void initSpinner() {
         nodes = (Spinner)findViewById(R.id.nodelist);
         node2 = (Spinner)findViewById(R.id.nodelist2);
@@ -96,6 +100,10 @@ public class AddNodeImageActivity extends AppCompatActivity implements NetworkRe
 
     }
 
+    /**
+     * helper method to load images and display it on screen
+     * @param res
+     */
     private void loadImageto3D(final Bitmap res) {
         new AsyncTask<Void, Void, byte[]>(){
             @Override
@@ -192,7 +200,7 @@ public class AddNodeImageActivity extends AppCompatActivity implements NetworkRe
         }else {
             String s1 = (String) nodes.getSelectedItem();
             String s2 = (String) node2.getSelectedItem();
-            if (!s1.equals(s2))
+            if (!s1.equals(s2)) // prevent form adding node to itself as an edge
                 NetworkConnector.getInstance().pairNodes(Constants.DEFULTUID.toString()+":"+s1, Constants.DEFULTUID.toString()+":"+s2,img, mAzimuth, false, this);
             else
                 Toast.makeText(this, "you can't add the same node as it's neighbour", Toast.LENGTH_SHORT).show();
@@ -200,12 +208,14 @@ public class AddNodeImageActivity extends AppCompatActivity implements NetworkRe
         }
     }
 
+    /**
+     * handle rotate image click event
+     * @param view
+     */
     public void Rotatepic(View view) {
 
-        Matrix m = new Matrix();
-        m.postRotate(90);
-        img = Bitmap.createBitmap(img,0,0,img.getWidth(),img.getHeight(),m,false);
-        tmp = Bitmap.createBitmap(tmp,0,0,tmp.getWidth(),tmp.getHeight(),m,false);
+        img = Converter.getRotatedImage(img, 90);
+        tmp = Converter.getRotatedImage(tmp, 90);
         panoWidgetView.setImageBitmap(tmp);
     }
 
@@ -227,6 +237,10 @@ public class AddNodeImageActivity extends AppCompatActivity implements NetworkRe
 
     }
 
+    /**
+     * handle new azimuth
+     * @param azimuth given degree from 0 to 359
+     */
     @Override
     public void onNewAzimuth(float azimuth) {
         mAzimuth = (int)azimuth;

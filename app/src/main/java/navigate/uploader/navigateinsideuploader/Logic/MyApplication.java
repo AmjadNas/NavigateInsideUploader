@@ -11,7 +11,9 @@ import java.util.List;
 
 import navigate.uploader.navigateinsideuploader.Logic.Listeners.BeaconListener;
 
-
+/**
+ * extension of the Application class to override system behaviour
+ */
 public class MyApplication extends Application {
 
     private BeaconManager beaconManager;
@@ -21,11 +23,11 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        // initialize listeners list and beacon manger
         listeners = new ArrayList<>();
         beaconManager = new BeaconManager(getApplicationContext());
         //beaconManager.setBackgroundScanPeriod(1000,500);
-
+        // set scan delay and ranging behaviour
         beaconManager.setForegroundScanPeriod(1000, 1000);
         beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
             @Override
@@ -50,6 +52,7 @@ public class MyApplication extends Application {
     }
 
     public void startRanging(){
+        // create ranging region
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
             @Override
             public void onServiceReady() {

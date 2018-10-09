@@ -12,6 +12,48 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <ImageView
+                android:id="@+id/thumb_add_node"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:clickable="true"
+                android:maxHeight="250dp"
+                android:maxWidth="250dp"
+                android:minHeight="50dp"
+                android:minWidth="50dp"
+                android:scaleType="fitXY" />
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/image_click_add_pick"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:adjustViewBounds="true"
+                    android:background="@mipmap/ic_launcher"
+                    android:clickable="true"
+                    android:foregroundGravity="center"
+                    android:maxHeight="100dp"
+                    android:maxWidth="100dp"
+                    android:minHeight="50dp"
+                    android:minWidth="50dp"
+                    android:onClick="FetchImage"
+                    android:scaleType="fitXY" />
+
+                <ImageView
+                    android:layout_width="247dp"
+                    android:layout_height="wrap_content"
+                    android:onClick="RotateImg"
+                    app:srcCompat="@android:drawable/ic_menu_rotate" />
+
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/edit_node_major"
@@ -67,12 +109,12 @@
                 android:layout_height="wrap_content"
                 android:text="is outside" />
 
-            <CheckBox
+          <!--  <CheckBox
                 android:id="@+id/nesoutside"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="is nesserly outside" />
-
+-->
             <Button
                 android:id="@+id/savebtn"
                 android:layout_height="wrap_content"

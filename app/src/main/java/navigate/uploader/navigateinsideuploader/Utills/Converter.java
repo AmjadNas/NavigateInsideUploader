@@ -2,13 +2,16 @@ package navigate.uploader.navigateinsideuploader.Utills;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.media.ThumbnailUtils;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-
+/**
+ * helper class for performing image conversion operations
+ */
 public final class Converter {
 
     private Converter(){}
@@ -41,6 +44,13 @@ public final class Converter {
 
     public static Bitmap getImageTHumbnail(byte[] img){
         return ThumbnailUtils.extractThumbnail(decodeImage(img),500,300);
+    }
+
+    public static Bitmap getRotatedImage(Bitmap img, int degree){
+        Matrix m = new Matrix();
+        m.postRotate(degree);
+
+         return Bitmap.createBitmap(img,0,0,img.getWidth(),img.getHeight(),m,false);
     }
 
 }
